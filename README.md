@@ -237,13 +237,40 @@ print(f"Best performing URL: {df.loc[df['users'].idxmax()]['url']}")
 
 ### Using the Visualization Module
 
-The visualization module provides functions to create various types of charts from your GA4 data:
+The visualization module can be used as both a command-line tool and an imported library.
+
+#### Using as a Command-Line Tool
+
+After collecting data with any of the GA4 fetcher scripts, you can directly visualize the results:
+
+```bash
+# Basic usage - automatically detects data type and creates appropriate chart
+python visualization.py ga4_your_data.csv
+
+# Specify output file
+python visualization.py ga4_your_data.csv --output my_chart.png
+
+# Choose chart type
+python visualization.py ga4_your_data.csv --type bar
+
+# Create interactive HTML visualization (requires plotly)
+python visualization.py ga4_your_data.csv --interactive
+```
+
+The tool automatically detects the type of GA4 data in your CSV file (url trend analysis, batch processing, date range analysis, etc.) and creates an appropriate visualization.
+
+#### Using as an Imported Module
+
+You can also import the visualization functions in your own Python scripts:
 
 ```python
-from visualization import create_trend_chart, create_bar_chart
+from visualization import create_trend_chart, create_bar_chart, visualize_from_csv
 import pandas as pd
 
-# Create example data
+# Directly visualize a CSV file
+visualize_from_csv('ga4_your_data.csv', output_file='chart.png')
+
+# Or work with DataFrame data manually
 df = pd.DataFrame({
     'days': [7, 30, 90, 180, 360],
     'users': [1200, 5400, 12500, 28000, 45000]
@@ -285,6 +312,23 @@ save_interactive_html(
     output_file='interactive_chart.html'
 )
 ```
+
+#### Recommended Workflow
+
+1. Collect data using the appropriate GA4 fetcher script:
+   ```bash
+   python ga4_fetcher.py --days 30 90 180 --input-file your_urls.csv
+   ```
+
+2. Visualize the results:
+   ```bash
+   python visualization.py ga4_your_urls.csv
+   ```
+
+This separation allows you to:
+- Collect data once and create multiple visualizations
+- Share CSV data files with colleagues who can visualize them without API access
+- Batch process data collection overnight and review visualizations later
 
 ## Google Analytics 4 Authentication Setup
 
