@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """
 URL Trend Analysis - Analyze a URL's performance over multiple time periods
 
@@ -23,10 +24,11 @@ Output format:
 import argparse
 import datetime
 import pandas as pd
-import matplotlib.pyplot as plt
+import os
 from ga4_client import initialize_analytics_client
 from ga4_data_fetcher import get_users_for_url
 from user_classification import classify_users
+from visualization import create_trend_chart
 
 def main():
     """
@@ -111,22 +113,37 @@ def main():
     if output_file:
         df.to_csv(output_file, index=False)
         print(f"\nResults saved to {output_file}")
+    else:
+        # Create a default output filename if none was specified
+        filename_safe_url = url.replace("https://", "").replace("http://", "").replace("/", "_").replace(".", "_")
+        timestamp = datetime.datetime.now().strftime("%Y%m%d")
+        output_file = f"url_trend_{filename_safe_url}_{timestamp}.csv"
+        df.to_csv(output_file, index=False)
+        print(f"\nResults saved to {output_file}")
     
-    # Try to create a visualization if matplotlib is available
+    # Create visualization using the visualization module
     try:
-        plt.figure(figsize=(10, 6))
-        plt.plot(df['days'], df['users'], marker='o', linestyle='-')
-        plt.title(f"User Growth Over Time for URL\n{url}")
-        plt.xlabel("Days Since Publication")
-        plt.ylabel("Total Users")
-        plt.grid(True)
+        # Generate a filename for the chart
+        plot_file = output_file.replace(".csv", ".png")
         
-        # Save the plot
-        plot_file = "url_trend_analysis.png" if not output_file else output_file.replace(".csv", ".png")
-        plt.savefig(plot_file)
-        print(f"Visualization saved to {plot_file}")
-    except ImportError:
-        print("\nMatplotlib not available. Skipping visualization.")
+        # Create the trend chart
+        chart_path = create_trend_chart(
+            df=df,
+            x_column='days',
+            y_column='users',
+            title='User Growth Over Time',
+            subtitle=url,
+            x_label='Days Since Publication',
+            y_label='Total Users',
+            output_file=plot_file
+        )
+        
+        if chart_path:
+            print(f"Visualization saved to {chart_path}")
+        else:
+            print("Failed to create visualization.")
+    except Exception as e:
+        print(f"\nError creating visualization: {e}")
 
 if __name__ == "__main__":
     main()
