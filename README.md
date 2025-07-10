@@ -12,6 +12,7 @@ The project has been organized into the following modules:
 - `ga4_data_fetcher.py`: Provides functions to fetch user data from GA4
 - `user_classification.py`: Classifies user counts into milestone categories
 - `batch_processor.py`: Contains functions for batch processing URLs from CSV files
+- `visualization.py`: Provides tools for creating charts and visualizations from GA4 data
 - `ga4_fetcher.py`: Main script for batch processing multiple URLs from a CSV file
 - `ga4_fetcher_uptodate.py`: Specialized script for analyzing URLs from publication date to a fixed end date
 - `single_url_analysis.py`: Example script for analyzing a single URL
@@ -232,6 +233,57 @@ df = pd.DataFrame(results)
 print(f"Total users: {df['users'].sum()}")
 print(f"Average users per URL: {df['users'].mean():.2f}")
 print(f"Best performing URL: {df.loc[df['users'].idxmax()]['url']}")
+```
+
+### Using the Visualization Module
+
+The visualization module provides functions to create various types of charts from your GA4 data:
+
+```python
+from visualization import create_trend_chart, create_bar_chart
+import pandas as pd
+
+# Create example data
+df = pd.DataFrame({
+    'days': [7, 30, 90, 180, 360],
+    'users': [1200, 5400, 12500, 28000, 45000]
+})
+
+# Create a trend line chart
+create_trend_chart(
+    df=df,
+    x_column='days',
+    y_column='users',
+    title='User Growth Over Time',
+    subtitle='https://www.yourpage.com/article',
+    x_label='Days Since Publication',
+    y_label='Total Users',
+    output_file='trend_chart.png'
+)
+
+# Create a bar chart for comparison
+create_bar_chart(
+    df=df,
+    x_column='days',
+    y_column='users',
+    title='User Growth by Time Period',
+    output_file='bar_chart.png'
+)
+```
+
+For interactive charts (requires plotly):
+
+```python
+from visualization import save_interactive_html
+
+# Create an interactive HTML chart
+save_interactive_html(
+    df=df,
+    x_column='days',
+    y_column='users',
+    title='Interactive User Growth Chart',
+    output_file='interactive_chart.html'
+)
 ```
 
 ## Google Analytics 4 Authentication Setup
