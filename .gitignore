@@ -1,0 +1,52 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Google API credentials
+*.json
+
+# Output files
+*.csv
+*.xlsx
+*.xls
+ga4_*.csv
+ga4_uptodate_*.csv
+invalid_date_published_rows.csv
+
+# Jupyter Notebooks
+.ipynb_checkpoints
+
+# Virtual Environment
+venv/
+env/
+ENV/
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# MacOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
