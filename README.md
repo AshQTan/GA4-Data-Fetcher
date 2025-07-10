@@ -379,6 +379,8 @@ To use this toolkit, you need to set up authentication with Google Analytics 4:
 
 Now you're ready to use the GA4 Data Fetcher toolkit!
 
+> **Note**: For information about the GA4 Data API dimensions, metrics, and filter specifications used in this project, refer to the [official Google Analytics 4 Data API Schema documentation](https://developers.google.com/analytics/devguides/reporting/data/v1/api-schema).
+
 ## Troubleshooting
 
 ### Authentication Issues
@@ -415,3 +417,7 @@ If you have issues installing dependencies:
 2. **Check Python version**: Ensure you're using Python 3.6+
 3. **Virtual environment**: Consider using a virtual environment for clean installation
 4. **Dependencies**: If only installing core packages: `pip install google-analytics-data pandas`
+
+## References and Documentation
+
+- [Google Analytics 4 Data API Schema](https://developers.google.com/analytics/devguides/reporting/data/v1/api-schema) - Official documentation for the GA4 Data API, including dimensions, metrics, and filter specifications used in this project.
