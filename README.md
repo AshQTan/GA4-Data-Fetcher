@@ -330,6 +330,144 @@ This separation allows you to:
 - Share CSV data files with colleagues who can visualize them without API access
 - Batch process data collection overnight and review visualizations later
 
+## Example Workflow with ga4_fetcher
+
+This section provides a step-by-step example workflow using `ga4_fetcher.py` from data preparation to visualization and analysis.
+
+### Step 1: Prepare Your Input Data
+
+Create a CSV file with your URLs and publication dates. For example, save the following as `content_analysis.csv`:
+
+```
+url,date_published
+https://www.yourpage.com/report-2024,2024-01-15
+https://www.yourpage.com/analysis-2024,2024-02-01
+https://www.yourpage.com/news-update-2024,2024-03-10
+https://www.yourpage.com/feature-story,2024-04-22
+https://www.yourpage.com/special-report,2024-05-05
+```
+
+### Step 2: Collect Analytics Data
+
+Run the `ga4_fetcher.py` script to collect analytics data for different time periods after publication:
+
+```bash
+python ga4_fetcher.py --days 7 30 90 --input-file content_analysis.csv --property-id "your-property-id" --credentials "your-credentials.json"
+```
+
+This command:
+- Analyzes each URL for three time periods: 7 days, 30 days, and 90 days after publication
+- Uses your GA4 property ID and service account credentials
+- Processes all URLs in the input file
+
+The script will:
+1. Read your input CSV file
+2. Connect to the GA4 API using your credentials
+3. For each URL, calculate the date ranges based on publication date
+4. Fetch user counts for each time period
+5. Classify results into performance categories
+6. Save the output to `ga4_content_analysis.csv`
+
+### Step 3: Review the Results
+
+The output file `ga4_content_analysis.csv` will contain the following columns:
+- `url`: The original URL
+- `date_published`: The content publication date
+- `users_7_days`: Number of users in the first 7 days
+- `users_30_days`: Number of users in the first 30 days
+- `users_90_days`: Number of users in the first 90 days
+- `milestone_7_days`: Performance category for the 7-day period
+- `milestone_30_days`: Performance category for the 30-day period
+- `milestone_90_days`: Performance category for the 90-day period
+- `detailed_milestone_7_days`: Detailed performance category for 7-day period
+- `detailed_milestone_30_days`: Detailed performance category for 30-day period
+- `detailed_milestone_90_days`: Detailed performance category for 90-day period
+
+Example output:
+```
+url,date_published,users_7_days,users_30_days,users_90_days,milestone_7_days,milestone_30_days,milestone_90_days,detailed_milestone_7_days,detailed_milestone_30_days,detailed_milestone_90_days
+https://www.yourpage.com/report-2024,2024-01-15,1250,4300,8900,Medium,Medium,Medium,1k-5k,1k-10k,5k-10k
+https://www.yourpage.com/analysis-2024,2024-02-01,750,2100,5600,Low,Low,Medium,500-1k,1k-5k,5k-10k
+https://www.yourpage.com/news-update-2024,2024-03-10,4500,15000,32000,High,High,High,1k-5k,10k-50k,10k-50k
+...
+```
+
+### Step 4: Visualize the Results
+
+Create visualizations from the output data using the `visualization.py` module:
+
+```bash
+# Create a default visualization based on detected data type
+python visualization.py ga4_content_analysis.csv
+
+# Create a bar chart showing 30-day performance
+python visualization.py ga4_content_analysis.csv --type bar
+
+# Create an interactive HTML visualization (requires plotly)
+python visualization.py ga4_content_analysis.csv --interactive
+```
+
+### Step 5: Advanced Analysis
+
+For deeper analysis, you can import the data into your own Python scripts:
+
+```python
+import pandas as pd
+from visualization import create_comparison_chart
+
+# Load the data
+df = pd.read_csv('ga4_content_analysis.csv')
+
+# Filter to most successful content
+top_performers = df.sort_values(by='users_90_days', ascending=False).head(3)
+
+# Create separate DataFrames for comparison
+df_list = []
+labels = []
+
+for _, row in top_performers.iterrows():
+    url_short = row['url'].split('/')[-1]
+    
+    # Create a DataFrame with time periods and user counts
+    data = {
+        'days': [7, 30, 90],
+        'users': [row['users_7_days'], row['users_30_days'], row['users_90_days']]
+    }
+    df_list.append(pd.DataFrame(data))
+    labels.append(url_short)
+
+# Create a comparison chart
+create_comparison_chart(
+    df_list=df_list,
+    labels=labels,
+    x_column='days',
+    y_column='users',
+    title='Top Content Performance Over Time',
+    output_file='top_content_comparison.png'
+)
+```
+
+### Step 6: Recurring Analysis
+
+For ongoing content monitoring, set up a scheduled task to run the analysis regularly:
+
+```bash
+# Create a bash script named analyze_content.sh
+echo '#!/bin/bash
+python ga4_fetcher.py --days 7 30 90 --input-file content_analysis.csv
+python visualization.py ga4_content_analysis.csv --output weekly_report.png
+' > analyze_content.sh
+
+# Make it executable
+chmod +x analyze_content.sh
+
+# Add to crontab to run weekly (adjust path as needed)
+# crontab -e
+# 0 7 * * 1 /path/to/analyze_content.sh
+```
+
+This workflow enables you to consistently monitor content performance across different time periods, identify trends, and optimize your content strategy based on data-driven insights.
+
 ## Google Analytics 4 Authentication Setup
 
 To use this toolkit, you need to set up authentication with Google Analytics 4:
